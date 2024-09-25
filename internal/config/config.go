@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -15,15 +17,16 @@ type Config struct {
 	AppPort          string
 }
 
-func LoadConfig() *Config {
-	viper.SetConfigFile(".env")
-	viper.AutomaticEnv()
+func LoadConfig() (*Config, error) {
+	envFile := ".env.local"
 
-	if err := viper.ReadInConfig(); err != nil {
-		log.Printf("Error reading config file: %v", err)
+	if err := godotenv.Load(envFile); err != nil {
+		log.Printf("Error loading %s file: %v", envFile, err)
 	}
 
-	return &Config{
+	viper.AutomaticEnv()
+
+	config := &Config{
 		PostgresUser:     viper.GetString("POSTGRES_USER"),
 		PostgresPassword: viper.GetString("POSTGRES_PASSWORD"),
 		PostgresDB:       viper.GetString("POSTGRES_DB"),
@@ -31,4 +34,25 @@ func LoadConfig() *Config {
 		PostgresPort:     viper.GetString("POSTGRES_PORT"),
 		AppPort:          viper.GetString("APP_PORT"),
 	}
+
+	return config, validateConfig(config)
+}
+
+func validateConfig(c *Config) error {
+	fields := map[string]string{
+		"POSTGRES_USER":     c.PostgresUser,
+		"POSTGRES_PASSWORD": c.PostgresPassword,
+		"POSTGRES_DB":       c.PostgresDB,
+		"POSTGRES_HOST":     c.PostgresHost,
+		"POSTGRES_PORT":     c.PostgresPort,
+		"APP_PORT":          c.AppPort,
+	}
+
+	for key, value := range fields {
+		if value == "" {
+			return fmt.Errorf("%s is not set", key)
+		}
+	}
+
+	return nil
 }
