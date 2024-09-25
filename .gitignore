@@ -1,0 +1,13 @@
+# Binaries
+/bin/
+/build/
+
+# IDE files
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+
+# Environment files
+.env
