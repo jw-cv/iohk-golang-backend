@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"iohk-golang-backend-preprod/internal/config"
+	"iohk-golang-backend-preprod/internal/infra/db"
 	"log"
 )
 
@@ -23,4 +25,18 @@ func main() {
 	fmt.Printf("PostgresHost: %s\n", cfg.PostgresHost)
 	fmt.Printf("PostgresPort: %s\n", cfg.PostgresPort)
 	fmt.Printf("AppPort: %s\n", cfg.AppPort)
+
+	// Set up the database connection
+	ctx := context.Background()
+	pool, err := db.SetupDBPool(ctx, cfg)
+	if err != nil {
+		log.Fatalf("Failed to set up database pool: %v", err)
+	}
+	defer db.CloseDBPool(pool)
+
+	// Set up your web server or GraphQL API here
+	// ...
+
+	// Run your server
+	// ...
 }
