@@ -56,41 +56,29 @@ func LoadConfig() (*Config, error) {
 }
 
 func validateConfig(c *Config) error {
-	if c.PostgresUser == "" {
-		return fmt.Errorf("POSTGRES_USER is not set")
+	validations := []struct {
+		valid  bool
+		errMsg string
+	}{
+		{c.PostgresUser != "", "POSTGRES_USER is not set"},
+		{c.PostgresPassword != "", "POSTGRES_PASSWORD is not set"},
+		{c.PostgresDB != "", "POSTGRES_DB is not set"},
+		{c.PostgresHost != "", "POSTGRES_HOST is not set"},
+		{c.PostgresPort != "", "POSTGRES_PORT is not set"},
+		{c.PostgresSSLMode != "", "POSTGRES_SSLMODE is not set"},
+		{c.DBMaxConns > 0, "DB_MAX_CONNS must be greater than 0"},
+		{c.DBMinConns > 0, "DB_MIN_CONNS must be greater than 0"},
+		{c.DBMaxConnLifetime > 0, "DB_MAX_CONN_LIFETIME must be greater than 0"},
+		{c.DBMaxConnIdleTime > 0, "DB_MAX_CONN_IDLE_TIME must be greater than 0"},
+		{c.DBHealthCheckPeriod > 0, "DB_HEALTH_CHECK_PERIOD must be greater than 0"},
+		{c.AppPort != "", "APP_PORT is not set"},
 	}
-	if c.PostgresPassword == "" {
-		return fmt.Errorf("POSTGRES_PASSWORD is not set")
+
+	for _, v := range validations {
+		if !v.valid {
+			return fmt.Errorf(v.errMsg)
+		}
 	}
-	if c.PostgresDB == "" {
-		return fmt.Errorf("POSTGRES_DB is not set")
-	}
-	if c.PostgresHost == "" {
-		return fmt.Errorf("POSTGRES_HOST is not set")
-	}
-	if c.PostgresPort == "" {
-		return fmt.Errorf("POSTGRES_PORT is not set")
-	}
-	if c.PostgresSSLMode == "" {
-		return fmt.Errorf("POSTGRES_SSLMODE is not set")
-	}
-	if c.DBMaxConns <= 0 {
-		return fmt.Errorf("DB_MAX_CONNS must be greater than 0")
-	}
-	if c.DBMinConns <= 0 {
-		return fmt.Errorf("DB_MIN_CONNS must be greater than 0")
-	}
-	if c.DBMaxConnLifetime <= 0 {
-		return fmt.Errorf("DB_MAX_CONN_LIFETIME must be greater than 0")
-	}
-	if c.DBMaxConnIdleTime <= 0 {
-		return fmt.Errorf("DB_MAX_CONN_IDLE_TIME must be greater than 0")
-	}
-	if c.DBHealthCheckPeriod <= 0 {
-		return fmt.Errorf("DB_HEALTH_CHECK_PERIOD must be greater than 0")
-	}
-	if c.AppPort == "" {
-		return fmt.Errorf("APP_PORT is not set")
-	}
+
 	return nil
 }
