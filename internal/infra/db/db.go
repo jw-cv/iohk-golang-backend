@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
 	"iohk-golang-backend-preprod/internal/config"
 
@@ -12,13 +11,13 @@ import (
 )
 
 func NewDBPool(ctx context.Context, cfg *config.Config) (*pgxpool.Pool, error) {
-	// TODO: put sslmode in env variables
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		cfg.PostgresUser,
 		cfg.PostgresPassword,
 		cfg.PostgresHost,
 		cfg.PostgresPort,
 		cfg.PostgresDB,
+		cfg.PostgresSSLMode,
 	)
 
 	poolConfig, err := pgxpool.ParseConfig(dsn)
@@ -26,12 +25,11 @@ func NewDBPool(ctx context.Context, cfg *config.Config) (*pgxpool.Pool, error) {
 		return nil, fmt.Errorf("unable to parse database connection string: %w", err)
 	}
 
-	// TODO: put this in env variables
-	poolConfig.MaxConns = 25
-	poolConfig.MinConns = 5
-	poolConfig.MaxConnLifetime = 5 * time.Hour
-	poolConfig.MaxConnIdleTime = 15 * time.Minute
-	poolConfig.HealthCheckPeriod = 1 * time.Minute
+	poolConfig.MaxConns = int32(cfg.DBMaxConns)
+	poolConfig.MinConns = int32(cfg.DBMinConns)
+	poolConfig.MaxConnLifetime = cfg.DBMaxConnLifetime
+	poolConfig.MaxConnIdleTime = cfg.DBMaxConnIdleTime
+	poolConfig.HealthCheckPeriod = cfg.DBHealthCheckPeriod
 
 	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
 	if err != nil {
