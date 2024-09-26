@@ -56,26 +56,41 @@ func LoadConfig() (*Config, error) {
 }
 
 func validateConfig(c *Config) error {
-	fields := map[string]string{
-		"POSTGRES_USER":          c.PostgresUser,
-		"POSTGRES_PASSWORD":      c.PostgresPassword,
-		"POSTGRES_DB":            c.PostgresDB,
-		"POSTGRES_HOST":          c.PostgresHost,
-		"POSTGRES_PORT":          c.PostgresPort,
-		"POSTGRES_SSLMODE":       c.PostgresSSLMode,
-		"DB_MAX_CONNS":           fmt.Sprintf("%d", c.DBMaxConns),
-		"DB_MIN_CONNS":           fmt.Sprintf("%d", c.DBMinConns),
-		"DB_MAX_CONN_LIFETIME":   fmt.Sprintf("%s", c.DBMaxConnLifetime),
-		"DB_MAX_CONN_IDLE_TIME":  fmt.Sprintf("%s", c.DBMaxConnIdleTime),
-		"DB_HEALTH_CHECK_PERIOD": fmt.Sprintf("%s", c.DBHealthCheckPeriod),
-		"APP_PORT":               c.AppPort,
+	if c.PostgresUser == "" {
+		return fmt.Errorf("POSTGRES_USER is not set")
 	}
-
-	for key, value := range fields {
-		if value == "" {
-			return fmt.Errorf("%s is not set", key)
-		}
+	if c.PostgresPassword == "" {
+		return fmt.Errorf("POSTGRES_PASSWORD is not set")
 	}
-
+	if c.PostgresDB == "" {
+		return fmt.Errorf("POSTGRES_DB is not set")
+	}
+	if c.PostgresHost == "" {
+		return fmt.Errorf("POSTGRES_HOST is not set")
+	}
+	if c.PostgresPort == "" {
+		return fmt.Errorf("POSTGRES_PORT is not set")
+	}
+	if c.PostgresSSLMode == "" {
+		return fmt.Errorf("POSTGRES_SSLMODE is not set")
+	}
+	if c.DBMaxConns <= 0 {
+		return fmt.Errorf("DB_MAX_CONNS must be greater than 0")
+	}
+	if c.DBMinConns <= 0 {
+		return fmt.Errorf("DB_MIN_CONNS must be greater than 0")
+	}
+	if c.DBMaxConnLifetime <= 0 {
+		return fmt.Errorf("DB_MAX_CONN_LIFETIME must be greater than 0")
+	}
+	if c.DBMaxConnIdleTime <= 0 {
+		return fmt.Errorf("DB_MAX_CONN_IDLE_TIME must be greater than 0")
+	}
+	if c.DBHealthCheckPeriod <= 0 {
+		return fmt.Errorf("DB_HEALTH_CHECK_PERIOD must be greater than 0")
+	}
+	if c.AppPort == "" {
+		return fmt.Errorf("APP_PORT is not set")
+	}
 	return nil
 }

@@ -34,6 +34,8 @@ func main() {
 	}
 	defer db.CloseDBPool(pool)
 
+	log.Println("Database connection established")
+
 	// Set up your web server or GraphQL API here
 	// ...
 
