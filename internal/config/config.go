@@ -35,7 +35,11 @@ func LoadConfig() (*Config, error) {
 		AppPort:          viper.GetString("APP_PORT"),
 	}
 
-	return config, validateConfig(config)
+	if err := validateConfig(config); err != nil {
+		return nil, err // Return nil and the error if validation fails
+	}
+
+	return config, nil
 }
 
 func validateConfig(c *Config) error {
