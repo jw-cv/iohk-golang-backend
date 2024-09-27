@@ -88,6 +88,8 @@ docker-build:
 docker-up:
 	@echo "Starting Docker containers..."
 	@$(DOCKER_COMPOSE_CMD) up -d
+	@echo "Showing Docker logs..."
+	@$(DOCKER_COMPOSE_CMD) logs -f
 
 docker-down:
 	@echo "Stopping Docker containers..."
