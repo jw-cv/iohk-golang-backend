@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
 )
 
@@ -20,7 +21,9 @@ func (Customer) Fields() []ent.Field {
 		field.Enum("gender").Values("Male", "Female"),
 		field.String("country").MaxLen(50).NotEmpty(),
 		field.Int("dependants").Default(0).Positive(),
-		field.Time("birth_date"),
+		field.Time("birth_date").SchemaType(map[string]string{
+			dialect.Postgres: "date",
+		}),
 	}
 }
 

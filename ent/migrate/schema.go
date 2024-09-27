@@ -17,7 +17,7 @@ var (
 		{Name: "gender", Type: field.TypeEnum, Enums: []string{"Male", "Female"}},
 		{Name: "country", Type: field.TypeString, Size: 50},
 		{Name: "dependants", Type: field.TypeInt, Default: 0},
-		{Name: "birth_date", Type: field.TypeTime},
+		{Name: "birth_date", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "date"}},
 	}
 	// CustomersTable holds the schema information for the "customers" table.
 	CustomersTable = &schema.Table{
