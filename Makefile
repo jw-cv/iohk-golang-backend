@@ -11,8 +11,22 @@ GOBIN=$(GOBASE)/bin
 # Main package path
 MAIN_PACKAGE=./cmd/server
 
-# Docker Compose command
-DOCKER_COMPOSE=docker-compose -f $(DOCKER_COMPOSE_FILE)
+# Determine Docker Compose command
+DOCKER_COMPOSE := $(shell \
+    if command -v docker-compose >/dev/null 2>&1; then \
+        echo "docker-compose"; \
+    elif docker compose version >/dev/null 2>&1; then \
+        echo "docker compose"; \
+    else \
+        echo ""; \
+    fi)
+
+# Check if Docker Compose is available
+ifeq ($(DOCKER_COMPOSE),)
+    $(error "Neither 'docker-compose' nor 'docker compose' found. Please install Docker Compose.")
+else
+    DOCKER_COMPOSE_CMD := $(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE)
+endif
 
 # Ensure GOPATH is set before running build
 GOPATH ?= $(HOME)/go
@@ -57,19 +71,19 @@ fmt:
 
 docker-build:
 	@echo "Building Docker images..."
-	@$(DOCKER_COMPOSE) build
+	@$(DOCKER_COMPOSE_CMD) build
 
 docker-up:
 	@echo "Starting Docker containers..."
-	@$(DOCKER_COMPOSE) up -d
+	@$(DOCKER_COMPOSE_CMD) up -d
 
 docker-down:
 	@echo "Stopping Docker containers..."
-	@$(DOCKER_COMPOSE) down
+	@$(DOCKER_COMPOSE_CMD) down
 
 docker-logs:
 	@echo "Showing Docker logs..."
-	@$(DOCKER_COMPOSE) logs -f
+	@$(DOCKER_COMPOSE_CMD) logs -f
 
 generate:
 	@echo "Generating GraphQL code..."
