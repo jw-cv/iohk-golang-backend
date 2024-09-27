@@ -13,3 +13,7 @@
 #.env.local
 .env.development
 .env.production
+
+# Coverage files
+coverage.html
+coverage.out
