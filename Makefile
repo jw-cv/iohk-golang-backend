@@ -36,6 +36,8 @@ GOPATH ?= $(HOME)/go
 all: build
 
 build:
+	@echo "Ensuring dependencies are downloaded..."
+	@go mod download
 	@echo "Building..."
 	@go build -o $(GOBIN)/$(BINARY_NAME) $(MAIN_PACKAGE)
 
@@ -49,23 +51,33 @@ run: build
 	@$(GOBIN)/$(BINARY_NAME)
 
 test:
+	@echo "Ensuring dependencies are downloaded..."
+	@go mod download
 	@echo "Running tests..."
 	@go test -v ./...
 
 coverage:
+	@echo "Ensuring dependencies are downloaded..."
+	@go mod download
 	@echo "Running tests with coverage..."
 	@go test -v -coverprofile=coverage.out ./...
 	@go tool cover -html=coverage.out -o coverage.html
 
 lint:
+	@echo "Ensuring dependencies are downloaded..."
+	@go mod download
 	@echo "Linting..."
 	@golangci-lint run
 
 vet:
+	@echo "Ensuring dependencies are downloaded..."
+	@go mod download
 	@echo "Vetting..."
 	@go vet ./...
 
 fmt:
+	@echo "Ensuring dependencies are downloaded..."
+	@go mod download
 	@echo "Formatting..."
 	@gofmt -s -w $(GO_FILES)
 
@@ -86,6 +98,8 @@ docker-logs:
 	@$(DOCKER_COMPOSE_CMD) logs -f
 
 generate:
+	@echo "Ensuring dependencies are downloaded..."
+	@go mod download
 	@echo "Generating GraphQL code..."
 	@go run github.com/99designs/gqlgen generate
 
