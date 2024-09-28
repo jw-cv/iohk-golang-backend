@@ -255,12 +255,20 @@ Note: If you're running tests outside of the Docker environment, these commands 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 Please adhere to the existing code style and include appropriate tests for new features.
+
+Before submitting your Pull Request, please:
+1. Ensure your code follows the project's coding standards
+2. Update the documentation as necessary
+3. Add or update tests to cover your changes
+4. Ensure all tests pass locally
+
+We appreciate your contributions to improve this project!
 
 ## Future Work
 
@@ -273,4 +281,4 @@ This project is licensed under the MIT License - see the [LICENSE](https://opens
 
 ## Contact Information
 
-For support or questions, please contact the development team at dev-team@example.com.
+For support or questions, please feel free to contact me at [joshwillems.cv@gmail.com](mailto:joshwillems.cv@gmail.com).
