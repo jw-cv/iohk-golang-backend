@@ -88,16 +88,6 @@ make help
 
 Here are some useful commands:
 
-- Build the application:
-  ```
-  make build
-  ```
-
-- Run the application:
-  ```
-  make run
-  ```
-
 - Start the Docker containers:
   ```
   make docker-up

@@ -35,19 +35,38 @@ GOPATH ?= $(HOME)/go
 
 all: build
 
-build:
-	@echo "Ensuring dependencies are downloaded..."
-	@go mod download
-	@echo "Building..."
-	@go build -o $(GOBIN)/$(BINARY_NAME) $(MAIN_PACKAGE)
+# Docker-related commands
+docker-build:
+	@echo "Building Docker images..."
+	@$(DOCKER_COMPOSE_CMD) build
 
+docker-up:
+	@echo "Starting Docker containers..."
+	@$(DOCKER_COMPOSE_CMD) up -d
+	@echo "Showing Docker logs..."
+	@$(DOCKER_COMPOSE_CMD) logs -f
+
+docker-down:
+	@echo "Stopping Docker containers..."
+	@$(DOCKER_COMPOSE_CMD) down
+
+docker-logs:
+	@echo "Showing Docker logs..."
+	@$(DOCKER_COMPOSE_CMD) logs -f
+
+# Local development commands
 clean:
 	@echo "Cleaning..."
 	@go clean
 	@rm -f $(GOBIN)/$(BINARY_NAME)
 
+build:
+	@echo "Ensuring dependencies are downloaded..."
+	@go mod download
+	@echo "Building the application locally without docker (for development purposes only)..."
+	@go build -o $(GOBIN)/$(BINARY_NAME) $(MAIN_PACKAGE)
 run: build
-	@echo "Running..."
+	@echo "Running the application locally without docker (for development purposes)..."
 	@$(GOBIN)/$(BINARY_NAME)
 
 test:
@@ -81,24 +100,6 @@ fmt:
 	@echo "Formatting..."
 	@gofmt -s -w $(GO_FILES)
 
-docker-build:
-	@echo "Building Docker images..."
-	@$(DOCKER_COMPOSE_CMD) build
-
-docker-up:
-	@echo "Starting Docker containers..."
-	@$(DOCKER_COMPOSE_CMD) up -d
-	@echo "Showing Docker logs..."
-	@$(DOCKER_COMPOSE_CMD) logs -f
-
-docker-down:
-	@echo "Stopping Docker containers..."
-	@$(DOCKER_COMPOSE_CMD) down
-
-docker-logs:
-	@echo "Showing Docker logs..."
-	@$(DOCKER_COMPOSE_CMD) logs -f
-
 generate:
 	@echo "Ensuring dependencies are downloaded..."
 	@go mod download
@@ -107,17 +108,17 @@ generate:
 
 help:
 	@echo "Available commands:"
-	@echo "  make build          - Build the application"
+	@echo "  make docker-build   - Build Docker images"
+	@echo "  make docker-up      - Start Docker containers"
+	@echo "  make docker-down    - Stop Docker containers"
+	@echo "  make docker-logs    - Show Docker logs"
 	@echo "  make clean          - Clean build files"
-	@echo "  make run            - Run the application"
+	@echo "  make build          - Build the application locally without docker (for development purposes only)"
+	@echo "  make run            - Run the application locally without docker (for development purposes only)"
 	@echo "  make test           - Run tests"
 	@echo "  make coverage       - Run tests with coverage"
 	@echo "  make lint           - Run linter"
 	@echo "  make vet            - Run go vet"
 	@echo "  make fmt            - Format code"
-	@echo "  make docker-build   - Build Docker images"
-	@echo "  make docker-up      - Start Docker containers"
-	@echo "  make docker-down    - Stop Docker containers"
-	@echo "  make docker-logs    - Show Docker logs"
 	@echo "  make generate       - Generate GraphQL code"
 	@echo "  make help           - Show this help message"
