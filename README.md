@@ -59,14 +59,17 @@ To run the application locally:
 
    This command will start both the PostgreSQL database and the Go application.
 
-2. The application should now be running. You can access the GraphQL playground at [http://localhost:8080/playground](http://localhost:8080/playground)
 
-3. To view the logs of the running containers:
+2. The application should now be running. You can access the GraphQL playground at [http://localhost:8080/playground](http://localhost:8080/playground). You can view some example queries and mutations in the [API Playground](#api-playground) section.
+
+
+3. To view the logs of the running containers (this is automatically run when you run `make docker-up`):
    ```
    make docker-logs
    ```
 
    This command will display the logs from all running containers. It's useful for debugging and monitoring the application's behavior.
+
 
 4. To stop the application and all associated containers:
    ```
