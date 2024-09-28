@@ -48,7 +48,7 @@ docker-up:
 
 docker-down:
 	@echo "Stopping Docker containers..."
-	@$(DOCKER_COMPOSE_CMD) down
+	@$(DOCKER_COMPOSE_CMD) down -v
 
 docker-logs:
 	@echo "Showing Docker logs..."
