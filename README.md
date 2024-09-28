@@ -8,7 +8,7 @@
 - [Configuration](#configuration)
 - [Database Setup](#database-setup)
 - [Database Schema](#database-schema)
-- [API Documentation](#api-documentation)
+- [API Playground](#api-playground)
 - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -175,7 +175,7 @@ These checks ensure data integrity by enforcing rules such as:
 
 The following SQL script [init.sql](scripts/init.sql) is used to generate the initial schema and seed data when the PostgreSQL container starts.
 
-## API Documentation
+## API Playground
 
 The GraphQL API can be explored using GraphQL Playground, which is available when running the application locally. To access it:
 
