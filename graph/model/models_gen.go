@@ -2,25 +2,86 @@
 
 package model
 
-type Mutation struct {
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
+type CreateCustomerInput struct {
+	Name       string `json:"name"`
+	Surname    string `json:"surname"`
+	Number     int    `json:"number"`
+	Gender     Gender `json:"gender"`
+	Country    string `json:"country"`
+	Dependants int    `json:"dependants"`
+	BirthDate  string `json:"birthDate"`
 }
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Customer struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Surname    string `json:"surname"`
+	Number     int    `json:"number"`
+	Gender     Gender `json:"gender"`
+	Country    string `json:"country"`
+	Dependants int    `json:"dependants"`
+	BirthDate  string `json:"birthDate"`
+}
+
+type Mutation struct {
 }
 
 type Query struct {
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+type UpdateCustomerInput struct {
+	Name       *string `json:"name,omitempty"`
+	Surname    *string `json:"surname,omitempty"`
+	Number     *int    `json:"number,omitempty"`
+	Gender     *Gender `json:"gender,omitempty"`
+	Country    *string `json:"country,omitempty"`
+	Dependants *int    `json:"dependants,omitempty"`
+	BirthDate  *string `json:"birthDate,omitempty"`
 }
 
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+type Gender string
+
+const (
+	GenderMale   Gender = "MALE"
+	GenderFemale Gender = "FEMALE"
+)
+
+var AllGender = []Gender{
+	GenderMale,
+	GenderFemale,
+}
+
+func (e Gender) IsValid() bool {
+	switch e {
+	case GenderMale, GenderFemale:
+		return true
+	}
+	return false
+}
+
+func (e Gender) String() string {
+	return string(e)
+}
+
+func (e *Gender) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Gender(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Gender", str)
+	}
+	return nil
+}
+
+func (e Gender) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
