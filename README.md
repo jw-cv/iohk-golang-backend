@@ -143,7 +143,7 @@ APP_PORT=8080
 
 ## Database Setup
 
-The PostgreSQL database is automatically set up when you run `make docker-up`. The initial schema and any seed data are applied through the `./scripts/init.sql` file.
+The PostgreSQL database is automatically set up when you run `make docker-up`. The initial schema and any seed data are applied through the [init.sql](scripts/init.sql) file.
 
 If you need to reset the database, you can run:
 
@@ -269,7 +269,7 @@ Please adhere to the existing code style and include appropriate tests for new f
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://opensource.org/licenses/MIT) file for details.
 
 ## Contact Information
 
