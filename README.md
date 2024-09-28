@@ -7,6 +7,7 @@
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Database Setup](#database-setup)
+- [Database Schema](#database-schema)
 - [API Documentation](#api-documentation)
 - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
@@ -25,8 +26,8 @@ Before you begin, ensure you have the following installed:
 - [Docker](https://docs.docker.com/get-docker/) (version 20.10 or later)
 - [Docker Compose](https://docs.docker.com/compose/install/) (version 1.29 or later)
 - [Make](https://www.gnu.org/software/make/) (version 4.3 or later)
-  - macOS: Included with Xcode Command Line Tools
-  - Linux: Use your distribution's package manager (e.g., `apt-get install make` for Ubuntu)
+  - macOS: Included with Xcode Command Line Tools or alternatively via Homebrew with `brew install make`
+  - Linux: Use your distribution's package manager (e.g., `sudo apt install make` for Ubuntu)
   - Windows: Install via [Chocolatey](https://chocolatey.org/install) with `choco install make`
 - [Go](https://golang.org/doc/install) (version 1.23.1 or later)
 
@@ -152,6 +153,27 @@ make docker-up
 ```
 
 This will destroy the existing database and create a new one with the initial schema.
+
+## Database Schema
+
+The application uses a PostgreSQL database with a `customer` table. Below are the details of the table structure and constraints:
+
+### Customer Table Columns
+
+![Customer Table Columns](schema-diagrams/sql-customer-columns.png)
+
+### Customer Table Checks
+
+![Customer Table Checks](schema-diagrams/sql-customer-checks.png)
+
+These checks ensure data integrity by enforcing rules such as:
+- The birth date cannot be in the future
+- The number of dependants cannot be negative
+- The gender must be one of the predefined values: 'MALE', 'FEMALE'
+
+### Initial Schema and Seed Data
+
+The following SQL script [init.sql](scripts/init.sql) is used to generate the initial schema and seed data when the PostgreSQL container starts.
 
 ## API Documentation
 
