@@ -1,28 +1,55 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+# Define a custom scalar for Date
+scalar Date
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+# Enum for Gender to ensure only valid values are used
+enum Gender {
+  MALE
+  FEMALE
 }
 
-type User {
-  id: ID!
+# Input type for creating a new customer
+input CreateCustomerInput {
   name: String!
+  surname: String!
+  number: Int!
+  gender: Gender!
+  country: String!
+  dependants: Int!
+  birthDate: Date!
 }
 
+# Input type for updating an existing customer
+input UpdateCustomerInput {
+  name: String
+  surname: String
+  number: Int
+  gender: Gender
+  country: String
+  dependants: Int
+  birthDate: Date
+}
+
+# Define the Customer type
+type Customer {
+    id: ID!
+    name: String!
+    surname: String!
+    number: Int!
+    gender: Gender!
+    country: String!
+    dependants: Int!
+    birthDate: Date!
+}
+
+# Define the Query type for fetching customers
 type Query {
-  todos: [Todo!]!
+    customer(id: ID!): Customer
+    customers: [Customer!]!
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
-}
-
+# Define the Mutation type for creating, updating, and deleting customers
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+    createCustomer(input: CreateCustomerInput!): Customer!
+    updateCustomer(id: ID!, input: UpdateCustomerInput!): Customer!
+    deleteCustomer(id: ID!): Boolean!
 }
