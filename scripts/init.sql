@@ -1,5 +1,5 @@
 -- Create the customer table
-CREATE TABLE IF NOT EXISTS customer (
+CREATE TABLE IF NOT EXISTS customers (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS customer (
 );
 
 -- Insert sample data into the customer table using TO_DATE to handle the MM/DD/YYYY date format
-INSERT INTO customer (name, surname, number, gender, country, dependants, birth_date) VALUES
+INSERT INTO customers (name, surname, number, gender, country, dependants, birth_date) VALUES
 ('Jack', 'Front', 123, 'Male', 'Latvia', 5, TO_DATE('10/3/1981', 'MM/DD/YYYY')),
 ('Jill', 'Human', 654, 'Female', 'Spain', 0, TO_DATE('6/2/1983', 'MM/DD/YYYY')),
 ('Robert', 'Pullman', 456, 'Male', 'Germany', 2, TO_DATE('5/4/1999', 'MM/DD/YYYY')),
