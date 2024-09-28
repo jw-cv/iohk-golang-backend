@@ -1,20 +1,21 @@
 # IOHK Golang Backend (Pre-production)
 
 ## Table of Contents
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Database Setup](#database-setup)
-- [Database Schema](#database-schema)
-- [API Playground](#api-playground)
-- [Testing](#testing)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [Future Work](#future-work)
-- [License](#license)
-- [Contact Information](#contact-information)
+1. [Introduction](#introduction)
+2. [Prerequisites](#prerequisites)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Configuration](#configuration)
+6. [Database Setup](#database-setup)
+7. [Database Schema](#database-schema)
+8. [API Playground](#api-playground)
+9. [Testing](#testing)
+10. [Troubleshooting](#troubleshooting)
+11. [Core Concepts](#core-concepts)
+12. [Contributing](#contributing)
+13. [Future Work](#future-work)
+14. [License](#license)
+15. [Contact Information](#contact-information)
 
 ## Introduction
 
@@ -244,6 +245,34 @@ Note: If you're running tests outside of the Docker environment, these commands 
 - If you encounter issues with Docker, ensure that the Docker daemon is running on your machine.
 - If you see database connection errors, check that the PostgreSQL container is running and that your `.env.local` file has the correct database credentials.
 - For any Go-related issues, ensure that your Go version matches the one specified in the `go.mod` file.
+
+## Core Concepts
+
+![DDD Architecture Diagram](schema-diagrams/ddd-architecture.png)
+
+### Repository
+
+The Repository layer is holding logic for interactions with any kind of data store. This could be a database or streaming-service. A repository is always defined through an interface before implementing it. This is important to keep it testable. They live inside the repository-directory.
+
+- Logging: Should not provide logic-based, but technical logging (e.g. connection-failures, timeouts). A not found database-row is mostly not a technical error, even if your db-driver returns an error in this case.
+
+- Errors: Errors returned by this Layer are not concerned for being seen by the end-user. Errors could contain sensible informations.
+
+### Service
+
+Your business-logic lives in the Service layer. Every action a user can do should be implemented in a service layer, but is not to this. A service could also provide functions used by other services, e.g. retrieving configuration. Similar to repositories, services should always be described through an interface. So you could mock it during tests. They live inside the service-directory.
+
+- Logging: Responsible for logic-based logging. Should log faulty actions (retrieving not existing entities, try accessing data without permission)
+
+- Errors: Errors should be non-technical and suited for the end-user. Not to much technical details, no sensible informations.
+
+### Resolver
+
+Resolvers are GraphQL construct for handling requests. They are described in the schema.graphql file. An interface for each type of action (Query, Mutation, Subscription) is created through gqlgen. This interface holds all possible user-actions and needs to be implemented. In this example, the implementation is done in the graphql/resolvers.go file. For larger projects it might be a good idea to use multiple files instead.
+
+- Logging: Logs everything interesting happening in data-transmission. In this example gqlgen should perform this aspect of logging.
+
+- Errors: Errors from the Service should be passed through from the Service layer.
 
 ## Contributing
 
