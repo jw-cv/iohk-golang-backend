@@ -3,14 +3,21 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"time"
+
+	"iohk-golang-backend-preprod/ent"
+	"iohk-golang-backend-preprod/ent/customer"
+	"iohk-golang-backend-preprod/ent/migrate"
 	"iohk-golang-backend-preprod/internal/config"
 	"iohk-golang-backend-preprod/internal/infra/db"
-	"log"
+
+	"entgo.io/ent/dialect"
+	entsql "entgo.io/ent/dialect/sql"
+	"github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
-	// Entry point of the application
-	fmt.Println("Hello World")
 
 	// Load the configuration
 	cfg, err := config.LoadConfig()
@@ -18,27 +25,72 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	// Use the configuration values
-	fmt.Printf("PostgresUser: %s\n", cfg.PostgresUser)
-	fmt.Printf("PostgresPassword: %s\n", cfg.PostgresPassword)
-	fmt.Printf("PostgresDB: %s\n", cfg.PostgresDB)
-	fmt.Printf("PostgresHost: %s\n", cfg.PostgresHost)
-	fmt.Printf("PostgresPort: %s\n", cfg.PostgresPort)
-	fmt.Printf("AppPort: %s\n", cfg.AppPort)
-
 	// Set up the database connection
 	ctx := context.Background()
-	pool, err := db.SetupDBPool(ctx, cfg)
+	pool, err := db.NewDBPool(ctx, cfg)
 	if err != nil {
 		log.Fatalf("Failed to set up database pool: %v", err)
 	}
 	defer db.CloseDBPool(pool)
 
-	log.Println("Database connection established")
+	// Set up entgo connection
+	db := stdlib.OpenDBFromPool(pool)
+	drv := entsql.OpenDB(dialect.Postgres, db)
+	client := ent.NewClient(ent.Driver(drv))
+
+	CreateCustomer(context.Background(), client)
+	QueryCustomer(context.Background(), client)
+	AutoMigration(context.Background(), client)
 
 	// Set up your web server or GraphQL API here
 	// ...
 
 	// Run your server
 	// ...
+}
+
+func CreateCustomer(ctx context.Context, client *ent.Client) (*ent.Customer, error) {
+	customer, err := client.Customer.
+		Create().
+		SetName("Ron Burgandy").
+		SetSurname("Burgandy").
+		SetNumber(333).
+		SetGender("Male").
+		SetCountry("USA").
+		SetDependants(69).
+		SetBirthDate(time.Date(1990, time.February, 2, 0, 0, 0, 0, time.UTC)).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating customer: %w", err)
+	}
+	log.Println("customer was created: ", customer)
+	return customer, nil
+}
+
+func QueryCustomer(ctx context.Context, client *ent.Client) (*ent.Customer, error) {
+	customer, err := client.Customer.
+		Query().
+		Where(customer.Name("Ron Burgandy")).
+		// `Only` fails if no customer found,
+		// or more than 1 customer returned.
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying customer: %w", err)
+	}
+	log.Println("customer returned: ", customer)
+	return customer, nil
+}
+
+func AutoMigration(ctx context.Context, client *ent.Client) {
+	log.Println("creating new schema resources (auto migration)")
+	err := client.Schema.Create(
+		ctx,
+		migrate.WithDropIndex(true),
+		migrate.WithDropColumn(true),
+		migrate.WithGlobalUniqueID(true),
+	)
+	if err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+	log.Println("schema resources created successfully (auto migration)")
 }

@@ -22,7 +22,7 @@ func NewDBPool(ctx context.Context, cfg *config.Config) (*pgxpool.Pool, error) {
 
 	poolConfig, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse database connection string: %w", err)
+		return nil, fmt.Errorf("unable to parse connection string: %w", err)
 	}
 
 	poolConfig.MaxConns = int32(cfg.DBMaxConns)
@@ -40,8 +40,8 @@ func NewDBPool(ctx context.Context, cfg *config.Config) (*pgxpool.Pool, error) {
 		pool.Close()
 		return nil, fmt.Errorf("unable to ping database: %w", err)
 	}
+	log.Println("Successfully created connection pool to the database")
 
-	log.Println("Successfully connected to the database")
 	return pool, nil
 }
 
@@ -51,29 +51,3 @@ func CloseDBPool(pool *pgxpool.Pool) {
 		log.Println("Database connection pool closed")
 	}
 }
-
-func SetupDBPool(ctx context.Context, cfg *config.Config) (*pgxpool.Pool, error) {
-	pool, err := NewDBPool(ctx, cfg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create database pool: %w", err)
-	}
-	return pool, nil
-}
-
-// TODO: Use the pool in your handlers or resolvers:
-
-// func someHandler(pool *pgxpool.Pool) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 			ctx := r.Context()
-// 			// Use pool.Acquire() to get a connection from the pool
-// 			conn, err := pool.Acquire(ctx)
-// 			if err != nil {
-// 					http.Error(w, "Failed to acquire database connection", http.StatusInternalServerError)
-// 					return
-// 			}
-// 			defer conn.Release()
-
-// 			// Use conn.Query(), conn.QueryRow(), or conn.Exec() for database operations
-// 			// ...
-// 	}
-// }
