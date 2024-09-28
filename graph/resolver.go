@@ -1,19 +1,23 @@
 package graph
 
-import "iohk-golang-backend-preprod/graph/model"
+import (
+	"iohk-golang-backend-preprod/ent"
+	"iohk-golang-backend-preprod/internal/domain/repository"
+	"iohk-golang-backend-preprod/internal/domain/service"
+)
 
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	customers []*model.Customer
-	nextID    int
+	customerService service.CustomerService
 }
 
-func NewResolver() *Resolver {
+func NewResolver(client *ent.Client) *Resolver {
+	customerRepo := repository.NewCustomerRepository(client)
+	customerService := service.NewCustomerService(customerRepo)
 	return &Resolver{
-		customers: make([]*model.Customer, 0),
-		nextID:    1,
+		customerService: customerService,
 	}
 }

@@ -6,85 +6,31 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"iohk-golang-backend-preprod/graph/model"
-	"strconv"
 )
 
 // Query Resolvers
 
 func (r *queryResolver) Customer(ctx context.Context, id string) (*model.Customer, error) {
-	for _, customer := range r.customers {
-		if customer.ID == id {
-			return customer, nil
-		}
-	}
-	return nil, fmt.Errorf("customer not found")
+	return r.customerService.GetCustomer(ctx, id)
 }
 
 func (r *queryResolver) Customers(ctx context.Context) ([]*model.Customer, error) {
-	return r.customers, nil
+	return r.customerService.GetAllCustomers(ctx)
 }
 
 // Mutation Resolvers
 
 func (r *mutationResolver) CreateCustomer(ctx context.Context, input model.CreateCustomerInput) (*model.Customer, error) {
-	customer := &model.Customer{
-		ID:         strconv.Itoa(r.nextID),
-		Name:       input.Name,
-		Surname:    input.Surname,
-		Number:     input.Number,
-		Gender:     input.Gender,
-		Country:    input.Country,
-		Dependants: input.Dependants,
-		BirthDate:  input.BirthDate,
-	}
-
-	r.customers = append(r.customers, customer)
-	r.nextID++
-
-	return customer, nil
+	return r.customerService.CreateCustomer(ctx, input)
 }
 
 func (r *mutationResolver) UpdateCustomer(ctx context.Context, id string, input model.UpdateCustomerInput) (*model.Customer, error) {
-	for i, customer := range r.customers {
-		if customer.ID == id {
-			if input.Name != nil {
-				customer.Name = *input.Name
-			}
-			if input.Surname != nil {
-				customer.Surname = *input.Surname
-			}
-			if input.Number != nil {
-				customer.Number = *input.Number
-			}
-			if input.Gender != nil {
-				customer.Gender = *input.Gender
-			}
-			if input.Country != nil {
-				customer.Country = *input.Country
-			}
-			if input.Dependants != nil {
-				customer.Dependants = *input.Dependants
-			}
-			if input.BirthDate != nil {
-				customer.BirthDate = *input.BirthDate
-			}
-			r.customers[i] = customer
-			return customer, nil
-		}
-	}
-	return nil, fmt.Errorf("customer not found")
+	return r.customerService.UpdateCustomer(ctx, id, input)
 }
 
 func (r *mutationResolver) DeleteCustomer(ctx context.Context, id string) (bool, error) {
-	for i, customer := range r.customers {
-		if customer.ID == id {
-			r.customers = append(r.customers[:i], r.customers[i+1:]...)
-			return true, nil
-		}
-	}
-	return false, fmt.Errorf("customer not found")
+	return r.customerService.DeleteCustomer(ctx, id)
 }
 
 // Resolver type assertions
