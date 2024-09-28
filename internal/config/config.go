@@ -21,7 +21,8 @@ type Config struct {
 	DBMaxConnLifetime   time.Duration
 	DBMaxConnIdleTime   time.Duration
 	DBHealthCheckPeriod time.Duration
-	AppPort             string
+	AppHost             string `envconfig:"APP_HOST" required:"true"`
+	AppPort             string `envconfig:"APP_PORT" required:"true"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -45,6 +46,7 @@ func LoadConfig() (*Config, error) {
 		DBMaxConnLifetime:   viper.GetDuration("DB_MAX_CONN_LIFETIME"),
 		DBMaxConnIdleTime:   viper.GetDuration("DB_MAX_CONN_IDLE_TIME"),
 		DBHealthCheckPeriod: viper.GetDuration("DB_HEALTH_CHECK_PERIOD"),
+		AppHost:             viper.GetString("APP_HOST"),
 		AppPort:             viper.GetString("APP_PORT"),
 	}
 
@@ -71,6 +73,7 @@ func validateConfig(c *Config) error {
 		{c.DBMaxConnLifetime > 0, "DB_MAX_CONN_LIFETIME must be greater than 0"},
 		{c.DBMaxConnIdleTime > 0, "DB_MAX_CONN_IDLE_TIME must be greater than 0"},
 		{c.DBHealthCheckPeriod > 0, "DB_HEALTH_CHECK_PERIOD must be greater than 0"},
+		{c.AppHost != "", "APP_HOST is not set"},
 		{c.AppPort != "", "APP_PORT is not set"},
 	}
 

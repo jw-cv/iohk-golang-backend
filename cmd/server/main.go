@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"iohk-golang-backend-preprod/ent"
@@ -19,28 +18,38 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 )
 
-const defaultPort = "8080"
-
 func main() {
+	cfg := loadConfig()
+	pool := setupDatabasePool(cfg)
+	defer db.CloseDBPool(pool)
+	setupEntgoConnection(pool)
+	// customerRepo := repository.NewCustomerRepository(db)
+	// customerService := service.NewCustomerService(customerRepo)
+	setupAndRunGraphQLServer(cfg)
+}
 
-	// Load the configuration
+func loadConfig() *config.Config {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
+	return cfg
+}
 
-	// Set up the database connection
+func setupDatabasePool(cfg *config.Config) *pgxpool.Pool {
 	ctx := context.Background()
 	pool, err := db.NewDBPool(ctx, cfg)
 	if err != nil {
 		log.Fatalf("Failed to set up database pool: %v", err)
 	}
-	defer db.CloseDBPool(pool)
+	return pool
+}
 
-	// Set up entgo connection
+func setupEntgoConnection(pool *pgxpool.Pool) {
 	db := stdlib.OpenDBFromPool(pool)
 	drv := entsql.OpenDB(dialect.Postgres, db)
 	client := ent.NewClient(ent.Driver(drv))
@@ -48,23 +57,6 @@ func main() {
 	CreateCustomer(context.Background(), client)
 	QueryCustomer(context.Background(), client)
 	AutoMigration(context.Background(), client)
-
-	// Set up your web server or GraphQL API here
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
-
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
-
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
-
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
-
-	// Run your server
-	// ...
 }
 
 func CreateCustomer(ctx context.Context, client *ent.Client) (*ent.Customer, error) {
@@ -111,4 +103,12 @@ func AutoMigration(ctx context.Context, client *ent.Client) {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 	log.Println("schema resources created successfully (auto migration)")
+}
+
+func setupAndRunGraphQLServer(cfg *config.Config) {
+	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", graphqlHandler)
+	log.Printf("connect to http://%s:%s/ for GraphQL playground", cfg.AppHost, cfg.AppPort)
+	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, nil))
 }

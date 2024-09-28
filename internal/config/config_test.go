@@ -30,6 +30,7 @@ func TestLoadConfig(t *testing.T) {
 				"DB_MAX_CONN_LIFETIME":   "5h",
 				"DB_MAX_CONN_IDLE_TIME":  "15m",
 				"DB_HEALTH_CHECK_PERIOD": "1m",
+				"APP_HOST":               "localhost",
 				"APP_PORT":               "8080",
 			},
 			expectedConfig: &Config{
@@ -44,6 +45,7 @@ func TestLoadConfig(t *testing.T) {
 				DBMaxConnLifetime:   5 * time.Hour,
 				DBMaxConnIdleTime:   15 * time.Minute,
 				DBHealthCheckPeriod: time.Minute,
+				AppHost:             "localhost",
 				AppPort:             "8080",
 			},
 			expectedError: false,
@@ -70,6 +72,7 @@ func TestLoadConfig(t *testing.T) {
 				"DB_MAX_CONN_LIFETIME":   "",
 				"DB_MAX_CONN_IDLE_TIME":  "",
 				"DB_HEALTH_CHECK_PERIOD": "",
+				"APP_HOST":               "",
 				"APP_PORT":               "",
 			},
 			expectedConfig: nil,
@@ -116,6 +119,7 @@ func TestLoadConfigWithoutEnvFile(t *testing.T) {
 	os.Setenv("DB_MAX_CONN_LIFETIME", "5h")
 	os.Setenv("DB_MAX_CONN_IDLE_TIME", "15m")
 	os.Setenv("DB_HEALTH_CHECK_PERIOD", "1m")
+	os.Setenv("APP_HOST", "localhost")
 	os.Setenv("APP_PORT", "8080")
 
 	// Act
@@ -135,6 +139,7 @@ func TestLoadConfigWithoutEnvFile(t *testing.T) {
 	assert.Equal(t, 5*time.Hour, config.DBMaxConnLifetime)
 	assert.Equal(t, 15*time.Minute, config.DBMaxConnIdleTime)
 	assert.Equal(t, time.Minute, config.DBHealthCheckPeriod)
+	assert.Equal(t, "localhost", config.AppHost)
 	assert.Equal(t, "8080", config.AppPort)
 }
 
@@ -159,6 +164,7 @@ func TestValidateConfig(t *testing.T) {
 				DBMaxConnLifetime:   5 * time.Hour,
 				DBMaxConnIdleTime:   15 * time.Minute,
 				DBHealthCheckPeriod: time.Minute,
+				AppHost:             "localhost",
 				AppPort:             "8080",
 			},
 			expectedError: "",
@@ -176,6 +182,7 @@ func TestValidateConfig(t *testing.T) {
 				DBMaxConnLifetime:   5 * time.Hour,
 				DBMaxConnIdleTime:   15 * time.Minute,
 				DBHealthCheckPeriod: time.Minute,
+				AppHost:             "localhost",
 				AppPort:             "8080",
 			},
 			expectedError: "POSTGRES_USER is not set",
@@ -193,6 +200,7 @@ func TestValidateConfig(t *testing.T) {
 				DBMaxConnLifetime:   5 * time.Hour,
 				DBMaxConnIdleTime:   15 * time.Minute,
 				DBHealthCheckPeriod: time.Minute,
+				AppHost:             "localhost",
 				AppPort:             "8080",
 			},
 			expectedError: "DB_MAX_CONNS must be greater than 0",
