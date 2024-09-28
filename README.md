@@ -59,7 +59,7 @@ To run the application locally:
 
    This command will start both the PostgreSQL database and the Go application.
 
-2. The application should now be running. You can access the GraphQL playground at `http://localhost:8080/playground`
+2. The application should now be running. You can access the GraphQL playground at [http://localhost:8080/playground](http://localhost:8080/playground)
 
 3. To view the logs of the running containers:
    ```
@@ -180,7 +180,7 @@ The following SQL script [init.sql](scripts/init.sql) is used to generate the in
 The GraphQL API can be explored using GraphQL Playground, which is available when running the application locally. To access it:
 
 1. Start the application using `make docker-up`
-2. Open a web browser and navigate to `http://localhost:8080/playground`
+2. Open a web browser and navigate to [http://localhost:8080/playground](http://localhost:8080/playground)
 
 Here you can explore the schema, run queries, and test mutations.
 
