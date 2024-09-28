@@ -4,18 +4,25 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
 	"time"
 
 	"iohk-golang-backend-preprod/ent"
 	"iohk-golang-backend-preprod/ent/customer"
 	"iohk-golang-backend-preprod/ent/migrate"
+	"iohk-golang-backend-preprod/graph"
 	"iohk-golang-backend-preprod/internal/config"
 	"iohk-golang-backend-preprod/internal/infra/db"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/jackc/pgx/v5/stdlib"
 )
+
+const defaultPort = "8080"
 
 func main() {
 
@@ -43,7 +50,18 @@ func main() {
 	AutoMigration(context.Background(), client)
 
 	// Set up your web server or GraphQL API here
-	// ...
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
+
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 
 	// Run your server
 	// ...

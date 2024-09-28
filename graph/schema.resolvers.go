@@ -8,53 +8,88 @@ import (
 	"context"
 	"fmt"
 	"iohk-golang-backend-preprod/graph/model"
+	"strconv"
 )
 
-// CreateCustomer is the resolver for the createCustomer field.
-func (r *mutationResolver) CreateCustomer(ctx context.Context, input model.CreateCustomerInput) (*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: CreateCustomer - createCustomer"))
-}
+// Query Resolvers
 
-// UpdateCustomer is the resolver for the updateCustomer field.
-func (r *mutationResolver) UpdateCustomer(ctx context.Context, id string, input model.UpdateCustomerInput) (*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: UpdateCustomer - updateCustomer"))
-}
-
-// DeleteCustomer is the resolver for the deleteCustomer field.
-func (r *mutationResolver) DeleteCustomer(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteCustomer - deleteCustomer"))
-}
-
-// Customer is the resolver for the customer field.
 func (r *queryResolver) Customer(ctx context.Context, id string) (*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: Customer - customer"))
+	for _, customer := range r.customers {
+		if customer.ID == id {
+			return customer, nil
+		}
+	}
+	return nil, fmt.Errorf("customer not found")
 }
 
-// Customers is the resolver for the customers field.
 func (r *queryResolver) Customers(ctx context.Context) ([]*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: Customers - customers"))
+	return r.customers, nil
 }
 
-// Mutation returns MutationResolver implementation.
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+// Mutation Resolvers
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+func (r *mutationResolver) CreateCustomer(ctx context.Context, input model.CreateCustomerInput) (*model.Customer, error) {
+	customer := &model.Customer{
+		ID:         strconv.Itoa(r.nextID),
+		Name:       input.Name,
+		Surname:    input.Surname,
+		Number:     input.Number,
+		Gender:     input.Gender,
+		Country:    input.Country,
+		Dependants: input.Dependants,
+		BirthDate:  input.BirthDate,
+	}
+
+	r.customers = append(r.customers, customer)
+	r.nextID++
+
+	return customer, nil
+}
+
+func (r *mutationResolver) UpdateCustomer(ctx context.Context, id string, input model.UpdateCustomerInput) (*model.Customer, error) {
+	for i, customer := range r.customers {
+		if customer.ID == id {
+			if input.Name != nil {
+				customer.Name = *input.Name
+			}
+			if input.Surname != nil {
+				customer.Surname = *input.Surname
+			}
+			if input.Number != nil {
+				customer.Number = *input.Number
+			}
+			if input.Gender != nil {
+				customer.Gender = *input.Gender
+			}
+			if input.Country != nil {
+				customer.Country = *input.Country
+			}
+			if input.Dependants != nil {
+				customer.Dependants = *input.Dependants
+			}
+			if input.BirthDate != nil {
+				customer.BirthDate = *input.BirthDate
+			}
+			r.customers[i] = customer
+			return customer, nil
+		}
+	}
+	return nil, fmt.Errorf("customer not found")
+}
+
+func (r *mutationResolver) DeleteCustomer(ctx context.Context, id string) (bool, error) {
+	for i, customer := range r.customers {
+		if customer.ID == id {
+			r.customers = append(r.customers[:i], r.customers[i+1:]...)
+			return true, nil
+		}
+	}
+	return false, fmt.Errorf("customer not found")
+}
+
+// Resolver type assertions
+func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+func (r *Resolver) Query() QueryResolver       { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
-}
-*/
