@@ -1,8 +1,6 @@
 package graph
 
 import (
-	"iohk-golang-backend-preprod/ent"
-	"iohk-golang-backend-preprod/internal/domain/repository"
 	"iohk-golang-backend-preprod/internal/domain/service"
 )
 
@@ -14,9 +12,7 @@ type Resolver struct {
 	customerService service.CustomerService
 }
 
-func NewResolver(client *ent.Client) *Resolver {
-	customerRepo := repository.NewCustomerRepository(client)
-	customerService := service.NewCustomerService(customerRepo)
+func NewResolver(customerService service.CustomerService) *Resolver {
 	return &Resolver{
 		customerService: customerService,
 	}
