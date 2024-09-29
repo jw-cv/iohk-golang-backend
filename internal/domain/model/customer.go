@@ -13,7 +13,7 @@ type Customer struct {
 	Name       string
 	Surname    string
 	Number     int
-	Gender     customer.Gender // Use customer.Gender instead of string
+	Gender     customer.Gender
 	Country    string
 	Dependants int
 	BirthDate  time.Time

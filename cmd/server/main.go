@@ -21,29 +21,17 @@ import (
 )
 
 func main() {
+	// Setup Configuration, Database and ORM
 	cfg := loadConfig()
 	pool := setupDatabasePool(cfg)
 	defer db.CloseDBPool(pool)
-
 	client := setupEntgoConnection(pool)
 	defer client.Close()
 
-	// Initialize repository and service
+	// Setup Repository, Service and GraphQL server
 	customerRepo := repository.NewCustomerRepository(client)
 	customerService := service.NewCustomerService(customerRepo)
-
-	// Create resolver with the initialized service
-	resolver := graph.NewResolver(customerService)
-
-	// Set up GraphQL server
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
-
-	// Set up HTTP server
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
-
-	log.Printf("connect to http://%s:%s/ for GraphQL playground", cfg.AppHost, cfg.AppPort)
-	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, nil))
+	setupAndRunGraphQLServer(cfg, customerService)
 }
 
 func loadConfig() *config.Config {
@@ -68,4 +56,16 @@ func setupEntgoConnection(pool *pgxpool.Pool) *ent.Client {
 	drv := entsql.OpenDB(dialect.Postgres, db)
 	client := ent.NewClient(ent.Driver(drv))
 	return client
+}
+
+func setupAndRunGraphQLServer(cfg *config.Config, customerService service.CustomerService) {
+	// Create NewResolver with the initialized service
+	resolver := graph.NewResolver(customerService)
+
+	// Set up GraphQL server
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+	log.Printf("Connect to http://%s:%s/ for GraphQL playground", cfg.AppHost, cfg.AppPort)
+	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, nil))
 }
