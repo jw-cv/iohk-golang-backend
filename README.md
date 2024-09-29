@@ -1,4 +1,4 @@
-# IOHK Golang Backend (Pre-production)
+# IOHK Golang Backend
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -9,29 +9,28 @@
 6. [Configuration](#configuration)
 7. [Database Setup](#database-setup)
 8. [Database Schema](#database-schema)
-9. [API Playground](#api-playground)
+9. [GraphQL API Playground](#graphql-api-playground)
 10. [Testing](#testing)
 11. [Troubleshooting](#troubleshooting)
 12. [Core Concepts](#core-concepts)
 13. [Contributing](#contributing)
-14. [Future Work](#future-work)
-15. [License](#license)
-16. [Contact Information](#contact-information)
+14. [Improvements](#improvements)
+15. [Contact Information](#contact-information)
 
 ## Introduction
 
-This project is a Golang-based backend application that serves as the API for a Next.js frontend application (located in a separate repository). It utilizes GraphQL for API queries and mutations and connects to a PostgreSQL database running inside a Docker container. The application is designed to be run locally using Docker for local testing and development purposes.
+This project is a Golang-based backend application that serves as the API for a [Next.js frontend application](https://github.com/jw-cv/iohk-nextjs-frontend). It utilizes GraphQL for API queries and mutations and connects to a PostgreSQL database running inside a Docker container. The application is designed to be run locally in a Docker container to ensure there are no dependency issues.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
-- [Docker](https://docs.docker.com/get-docker/) (version 20.10 or later)
-- [Docker Compose](https://docs.docker.com/compose/install/) (version 1.29 or later)
-- [Make](https://www.gnu.org/software/make/) (version 4.3 or later)
+Before you begin, please ensure you have the following installed:
+- [Docker](https://docs.docker.com/get-docker/) (tested on 27.3.1, but should work on any version above 20.10)
+- [Docker Compose](https://docs.docker.com/compose/install/) (tested on 2.29.7, but should work on any version above 2.0)
+- [Make](https://www.gnu.org/software/make/) (tested on 4.3, but should work on any version above 3.81)
   - macOS: Included with Xcode Command Line Tools or alternatively via Homebrew with `brew install make`
   - Linux: Use your distribution's package manager (e.g., `sudo apt install make` for Ubuntu)
   - Windows: Install via [Chocolatey](https://chocolatey.org/install) with `choco install make`
-- [Go](https://golang.org/doc/install) (version 1.23.1 or later)
+- [Go](https://golang.org/doc/install) (tested on 1.23.1, but should work on any version above 1.20)
 
 Please follow the links to find installation instructions for your specific operating system.
 
@@ -39,8 +38,8 @@ Please follow the links to find installation instructions for your specific oper
 
 1. Clone the repository and navigate to the project directory:
    ```
-   git clone https://github.com/your-organization/iohk-golang-backend-preprod.git
-   cd iohk-golang-backend-preprod
+   git clone https://github.com/jw-cv/iohk-golang-backend.git
+   cd iohk-golang-backend
    ```
 
 2. Build the Docker images:
@@ -62,7 +61,7 @@ To run the application locally:
    This command will start both the PostgreSQL database and the Go application.
 
 
-2. The application should now be running. You can access the GraphQL playground at [http://localhost:8080/playground](http://localhost:8080/playground). You can view some example queries and mutations in the [API Playground](#api-playground) section.
+2. The application should now be running. You can access the GraphQL playground at [http://localhost:8080/playground](http://localhost:8080/playground). You can view some example queries and mutations in the [GraphQL API Playground](#graphql-api-playground) section.
 
 
 3. To view the logs of the running containers (this is automatically run when you run `make docker-up`):
@@ -73,7 +72,7 @@ To run the application locally:
    This command will display the logs from all running containers. It's useful for debugging and monitoring the application's behavior.
 
 
-4. To stop the application and all associated containers:
+4. To stop the application and all associated containers and volumes:
    ```
    make docker-down
    ```
@@ -119,7 +118,7 @@ This command should be run after making changes to the GraphQL schema in `graph/
 
 ## Configuration
 
-The application uses environment variables for configuration. These are stored in the `.env.local` file. Here's an example of the required variables:
+The application uses environment variables for configuration. These are stored in the `.env.local` file. Here's an example of the required variables (you can change these to your liking but there is no need to change anything in order to run the application):
 
 ```
 POSTGRES_USER=your_username
@@ -138,7 +137,7 @@ APP_PORT=8080
 
 ## Database Setup
 
-The PostgreSQL database is automatically set up when you run `make docker-up`. The initial schema and any seed data are applied through the [init.sql](scripts/init.sql) file.
+The PostgreSQL database is automatically set up when you run `make docker-up`. The initial schema and seed data are applied through the [init.sql](scripts/init.sql) file.
 
 If you need to reset the database, you can run:
 
@@ -147,7 +146,7 @@ make docker-down
 make docker-up
 ```
 
-This will destroy the existing database and create a new one with the initial schema.
+This will destroy the existing database and volumes and create a new one with the initial schema and seed data.
 
 ## Database Schema
 
@@ -164,39 +163,23 @@ The application uses a PostgreSQL database with a `customer` table. Below are th
 These checks ensure data integrity by enforcing rules such as:
 - The birth date cannot be in the future
 - The number of dependants cannot be negative
-- The gender must be one of the predefined values: 'MALE', 'FEMALE'
+- The gender must be one of the predefined values: 'Male', 'Female'
 
 ### Initial Schema and Seed Data
 
 The following SQL script [init.sql](scripts/init.sql) is used to generate the initial schema and seed data when the PostgreSQL container starts.
 
-## API Playground
+## GraphQL API Playground
 
-The GraphQL API can be explored using GraphQL Playground, which is available when running the application locally. To access it:
+The GraphQL API can be explored using GraphQL Playground, which is available when running the application locally. You can perform CRUD (Create, Read, Update, Delete) operations on the customer data. To access it:
 
 1. Start the application using `make docker-up`
 2. Open a web browser and navigate to [http://localhost:8080/playground](http://localhost:8080/playground)
+3. These changes will be reflected in the frontend application running at [http://localhost:3000](http://localhost:3000).
 
-Here you can explore the schema, run queries, and test mutations.
+Here are some example operations you can perform (you can copy these into the playground and run them to generate new data and see the results on the frontend):
 
-Example query to get all customers:
-
-```
-query GetAllCustomers {
-  customers {
-    id
-    name
-    surname
-    number
-    gender
-    country
-    dependants
-    birthDate
-  }
-}
-```
-
-Example mutation:
+### Create a Customer
 
 ```
 mutation CreateCustomer {
@@ -221,6 +204,60 @@ mutation CreateCustomer {
 }
 ```
 
+### Get All Customers
+
+```
+query GetAllCustomers {
+  customers {
+    id
+    name
+    surname
+    number
+    gender
+    country
+    dependants
+    birthDate
+  }
+}
+```
+
+### Update a Customer
+
+```
+mutation UpdateCustomer {
+  updateCustomer(
+    id: "1", 
+    input: {
+      name: "Jane"
+      surname: "Smith"
+      number: 456
+      gender: FEMALE
+      country: "Canada"
+      dependants: 1
+      birthDate: "1985-05-15"
+    }
+  ) {
+    id
+    name
+    surname
+    number
+    gender
+    country
+    dependants
+    birthDate
+  }
+}
+```
+
+### Delete a Customer
+
+```
+mutation DeleteCustomer {
+  deleteCustomer(id: "1")
+}
+```
+
+
 ## Testing
 
 To run the unit test suite:
@@ -239,7 +276,7 @@ make coverage
 
 This will download dependencies if needed, run the tests, and generate a `coverage.html` file that you can open in your browser to view detailed coverage information.
 
-Note: If you're running tests outside of the Docker environment, these commands will automatically download any missing dependencies before running the tests.
+Note: These tests run on bare metal and not in the Docker container.
 
 ## Troubleshooting
 
@@ -257,19 +294,19 @@ The Repository layer is holding logic for interactions with any kind of data sto
 
 - Logging: Should not provide logic-based, but technical logging (e.g. connection-failures, timeouts). A not found database-row is mostly not a technical error, even if your db-driver returns an error in this case.
 
-- Errors: Errors returned by this Layer are not concerned for being seen by the end-user. Errors could contain sensible informations.
+- Errors: Errors returned by this Layer are not concerned for being seen by the end-user.
 
 ### Service
 
 Your business-logic lives in the Service layer. Every action a user can do should be implemented in a service layer, but is not to this. A service could also provide functions used by other services, e.g. retrieving configuration. Similar to repositories, services should always be described through an interface. So you could mock it during tests. They live inside the service-directory.
 
-- Logging: Responsible for logic-based logging. Should log faulty actions (retrieving not existing entities, try accessing data without permission)
+- Logging: Responsible for logic-based logging. Should log faulty actions (retrieving non existing entities, try accessing data without permission)
 
-- Errors: Errors should be non-technical and suited for the end-user. Not to much technical details, no sensible informations.
+- Errors: Errors should be non-technical and suited for the end-user.
 
 ### Resolver
 
-Resolvers are GraphQL construct for handling requests. They are described in the schema.graphql file. An interface for each type of action (Query, Mutation, Subscription) is created through gqlgen. This interface holds all possible user-actions and needs to be implemented. In this example, the implementation is done in the graphql/resolvers.go file. For larger projects it might be a good idea to use multiple files instead.
+Resolvers are GraphQL construct for handling requests. They are described in the [schema.graphqls](/graph/schema.graphqls) file. An interface for each type of action (Query, Mutation, Subscription) is created through gqlgen. This interface holds all possible user-actions and needs to be implemented. In this example, the implementation is done in the [resolver.go](/graph/resolver.go) file. For larger projects it might be a good idea to use multiple files instead.
 
 - Logging: Logs everything interesting happening in data-transmission. In this example gqlgen should perform this aspect of logging.
 
@@ -291,17 +328,17 @@ Before submitting your Pull Request, please:
 3. Add or update tests to cover your changes
 4. Ensure all tests pass locally
 
-We appreciate your contributions to improve this project!
+Please see my [Contact Information](#contact-information) below for any queries you may have.
 
-## Future Work
+## Improvements
 
-- Deployment instructions for AWS and Vercel will be added in future updates.
-- Additional API endpoints and features are planned for upcoming releases.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](https://opensource.org/licenses/MIT) file for details.
+- There are many things I would have liked to add to this project and there is always room for improvement.
+- I would have liked to make use of https://hasura.io/ or similar tools to generate the APIs and other boilerplate code from the database schema / single source of truth.
+- Deploy this application to AWS and present a URL for ease of use.
+- Incorporate a CI/CD pipeline.
+- Add authentication, authorization and many more features to the frontend.
+- The list goes on...
 
 ## Contact Information
 
-For support or questions, please feel free to contact me at [joshwillems.cv@gmail.com](mailto:joshwillems.cv@gmail.com).
+For any questions you may have, please feel free to contact me at [joshwillems.cv@gmail.com](mailto:joshwillems.cv@gmail.com).
