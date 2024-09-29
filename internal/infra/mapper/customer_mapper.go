@@ -89,11 +89,6 @@ func DomainToUpdateInput(c *domainmodel.Customer) *model.UpdateCustomerInput {
 	}
 }
 
-// Helper function for string pointers
-func stringPtr(s string) *string {
-	return &s
-}
-
 func DomainToGraphQLSlice(customers []*domainmodel.Customer) []*model.Customer {
 	result := make([]*model.Customer, len(customers))
 	for i, c := range customers {
@@ -106,6 +101,10 @@ func DomainToGraphQLSlice(customers []*domainmodel.Customer) []*model.Customer {
 func UpdateInputToDomain(id string, input *model.UpdateCustomerInput) *domainmodel.Customer {
 	customer := &domainmodel.Customer{}
 	customer.ID, _ = strconv.Atoi(id)
+
+	if input == nil {
+		return customer
+	}
 
 	if input.Name != nil {
 		customer.Name = *input.Name
@@ -142,4 +141,9 @@ func entGenderToDomainGender(g customer.Gender) domainmodel.Gender {
 	default:
 		return ""
 	}
+}
+
+// Helper function for string pointers
+func stringPtr(s string) *string {
+	return &s
 }
