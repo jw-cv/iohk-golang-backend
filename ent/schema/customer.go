@@ -20,7 +20,7 @@ func (Customer) Fields() []ent.Field {
 		field.Int("number").Positive(),
 		field.Enum("gender").Values("Male", "Female"),
 		field.String("country").MaxLen(50).NotEmpty(),
-		field.Int("dependants").Default(0).Positive(),
+		field.Int("dependants").Default(0).NonNegative(),
 		field.Time("birth_date").SchemaType(map[string]string{
 			dialect.Postgres: "date",
 		}),
