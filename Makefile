@@ -92,7 +92,7 @@ test-integration-up:
 
 test-integration-run:
 	@echo "Running integration tests..."
-	@go test -v -tags integration ./... -run TestDatabaseConnection
+	@go test -v -tags=integration ./internal/infra/db -run TestDatabaseIntegration
 
 test-integration-down:
 	@echo "Stopping test database..."
@@ -144,3 +144,4 @@ help:
 	@echo "  make fmt                  - Format code"
 	@echo "  make generate             - Generate GraphQL code"
 	@echo "  make help                 - Show this help message"
+	@echo "  make test-integration  - Run integration tests using Testcontainers"

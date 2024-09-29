@@ -282,38 +282,18 @@ Note: These tests run on bare metal and not in the Docker container.
 
 ### Integration Tests
 
-To run the integration tests, which interact with a test database, follow these steps:
+To run the integration tests, which use Testcontainers to spin up a PostgreSQL database:
 
-1. Ensure Docker is running on your machine.
+```
+make test-integration
+```
 
-2. You have two options for running integration tests:
+This command will:
+- Start a PostgreSQL container using Testcontainers
+- Run the integration tests
+- Automatically tear down the container after tests complete
 
-   a. Run the entire integration test cycle (start DB, run tests, stop DB) with a single command:
-      ```
-      make test-integration
-      ```
-
-   b. Or, you can run each step separately:
-      - Start the test database:
-        ```
-        make test-integration-up
-        ```
-      - Run the integration tests:
-        ```
-        make test-integration-run
-        ```
-      - After the tests complete, stop and remove the test database:
-        ```
-        make test-integration-down
-        ```
-
-Note: Integration tests may take longer to run than unit tests as they involve setting up and tearing down a test database.
-
-The integration tests use a separate configuration file (`.env.test`) and a different database (`customers_test`) to avoid conflicts with the development or production environments.
-
-If you need to modify the test database configuration, you can edit the `.env.test` file and the `docker-compose.test.yml` file in the project root.
-
-Remember to run integration tests before submitting pull requests, especially if you've made changes to database interactions or API endpoints.
+Note: Ensure Docker is running on your machine before running integration tests.
 
 ## Troubleshooting
 
