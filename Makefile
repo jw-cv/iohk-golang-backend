@@ -31,7 +31,7 @@ endif
 # Ensure GOPATH is set before running build
 GOPATH ?= $(HOME)/go
 
-.PHONY: all build clean run test coverage test-integration-up test-integration-run test-integration-down test-integration lint vet fmt docker-build docker-up docker-down docker-logs help
+.PHONY: all build clean run test coverage test-integration lint vet fmt docker-build docker-up docker-down docker-logs help
 
 all: build
 
@@ -65,6 +65,7 @@ build:
 	@go mod download
 	@echo "Building the application locally without docker (for development purposes only)..."
 	@go build -o $(GOBIN)/$(BINARY_NAME) $(MAIN_PACKAGE)
+
 run: build
 	@echo "Running the application locally without docker (for development purposes)..."
 	@$(GOBIN)/$(BINARY_NAME)
@@ -83,22 +84,10 @@ coverage:
 	@go test -v -coverprofile=coverage.out ./...
 	@go tool cover -html=coverage.out -o coverage.html
 
-# Integration tests commands
-test-integration-up:
-	@echo "Starting test database..."
-	@$(DOCKER_COMPOSE_CMD) -f docker-compose.test.yml up -d
-	@echo "Waiting for test database to be ready..."
-	@sleep 5
-
-test-integration-run:
-	@echo "Running integration tests..."
+# Integration tests command
+test-integration:
+	@echo "Running integration tests using Testcontainers..."
 	@go test -v -tags=integration ./internal/infra/db -run TestDatabaseIntegration
-
-test-integration-down:
-	@echo "Stopping test database..."
-	@$(DOCKER_COMPOSE_CMD) -f docker-compose.test.yml down -v
-
-test-integration: test-integration-up test-integration-run test-integration-down
 
 lint:
 	@echo "Ensuring dependencies are downloaded..."
@@ -135,13 +124,9 @@ help:
 	@echo "  make run                  - Run the application locally without docker (for development purposes only)"
 	@echo "  make test                 - Run unit tests"
 	@echo "  make coverage             - Run tests with coverage"
-	@echo "  make test-integration-up   - Start the test database for integration tests"
-	@echo "  make test-integration-run  - Run integration tests (assumes test DB is already up)"
-	@echo "  make test-integration-down - Stop the test database for integration tests"
-	@echo "  make test-integration      - Run full integration test cycle (up, test, down)"
+	@echo "  make test-integration     - Run integration tests using Testcontainers"
 	@echo "  make lint                 - Run linter"
 	@echo "  make vet                  - Run go vet"
 	@echo "  make fmt                  - Format code"
 	@echo "  make generate             - Generate GraphQL code"
 	@echo "  make help                 - Show this help message"
-	@echo "  make test-integration  - Run integration tests using Testcontainers"
