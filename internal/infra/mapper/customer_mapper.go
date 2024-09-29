@@ -57,7 +57,7 @@ func EntToDomain(c *ent.Customer) *domainmodel.Customer {
 		Name:       c.Name,
 		Surname:    c.Surname,
 		Number:     c.Number,
-		Gender:     domainmodel.Gender(c.Gender),
+		Gender:     entGenderToDomainGender(c.Gender),
 		Country:    c.Country,
 		Dependants: c.Dependants,
 		BirthDate:  c.BirthDate,
@@ -70,7 +70,7 @@ func DomainToEnt(c *domainmodel.Customer) *ent.Customer {
 		Name:       c.Name,
 		Surname:    c.Surname,
 		Number:     c.Number,
-		Gender:     customer.Gender(c.Gender),
+		Gender:     customer.Gender(c.Gender.ToDatabaseValue()),
 		Country:    c.Country,
 		Dependants: c.Dependants,
 		BirthDate:  c.BirthDate,
@@ -130,4 +130,16 @@ func UpdateInputToDomain(id string, input *model.UpdateCustomerInput) *domainmod
 	}
 
 	return customer
+}
+
+// New helper function
+func entGenderToDomainGender(g customer.Gender) domainmodel.Gender {
+	switch g {
+	case customer.GenderMale:
+		return domainmodel.GenderMale
+	case customer.GenderFemale:
+		return domainmodel.GenderFemale
+	default:
+		return ""
+	}
 }

@@ -8,8 +8,8 @@ import (
 type Gender string
 
 const (
-	GenderMale   Gender = "Male"
-	GenderFemale Gender = "Female"
+	GenderMale   Gender = "MALE"
+	GenderFemale Gender = "FEMALE"
 )
 
 type Customer struct {
@@ -30,6 +30,17 @@ func (g Gender) ToEntGender() customer.Gender {
 	case GenderFemale:
 		return customer.GenderFemale
 	default:
-		return customer.Gender("") // or handle this case as you see fit
+		return customer.Gender("")
+	}
+}
+
+func (g Gender) ToDatabaseValue() string {
+	switch g {
+	case GenderMale:
+		return "Male"
+	case GenderFemale:
+		return "Female"
+	default:
+		return ""
 	}
 }

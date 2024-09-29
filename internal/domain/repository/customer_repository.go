@@ -33,7 +33,7 @@ func (r *customerRepository) Create(ctx context.Context, customer *domainmodel.C
 		SetName(customer.Name).
 		SetSurname(customer.Surname).
 		SetNumber(customer.Number).
-		SetGender(customer.Gender.ToEntGender()). // Use the conversion method here
+		SetGender(customer.Gender.ToEntGender()).
 		SetCountry(customer.Country).
 		SetDependants(customer.Dependants).
 		SetBirthDate(customer.BirthDate).
