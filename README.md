@@ -260,6 +260,8 @@ mutation DeleteCustomer {
 
 ## Testing
 
+### Unit Tests
+
 To run the unit test suite:
 
 ```
@@ -277,6 +279,41 @@ make coverage
 This will download dependencies if needed, run the tests, and generate a `coverage.html` file that you can open in your browser to view detailed coverage information.
 
 Note: These tests run on bare metal and not in the Docker container.
+
+### Integration Tests
+
+To run the integration tests, which interact with a test database, follow these steps:
+
+1. Ensure Docker is running on your machine.
+
+2. You have two options for running integration tests:
+
+   a. Run the entire integration test cycle (start DB, run tests, stop DB) with a single command:
+      ```
+      make test-integration
+      ```
+
+   b. Or, you can run each step separately:
+      - Start the test database:
+        ```
+        make test-integration-up
+        ```
+      - Run the integration tests:
+        ```
+        make test-integration-run
+        ```
+      - After the tests complete, stop and remove the test database:
+        ```
+        make test-integration-down
+        ```
+
+Note: Integration tests may take longer to run than unit tests as they involve setting up and tearing down a test database.
+
+The integration tests use a separate configuration file (`.env.test`) and a different database (`customers_test`) to avoid conflicts with the development or production environments.
+
+If you need to modify the test database configuration, you can edit the `.env.test` file and the `docker-compose.test.yml` file in the project root.
+
+Remember to run integration tests before submitting pull requests, especially if you've made changes to database interactions or API endpoints.
 
 ## Troubleshooting
 
