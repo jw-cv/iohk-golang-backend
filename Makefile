@@ -87,7 +87,7 @@ coverage:
 # Integration tests command
 test-integration:
 	@echo "Running integration tests using Testcontainers..."
-	@go test -v -tags=integration ./internal/infra/db -run TestDatabaseIntegration
+	@go test -v -tags="integration testcoverage" ./internal/infra/db -run TestDatabaseIntegration
 
 lint:
 	@echo "Ensuring dependencies are downloaded..."
