@@ -2,24 +2,30 @@
 
 ## Table of Contents
 1. [Introduction](#introduction)
-2. [Prerequisites](#prerequisites)
-3. [Installation](#installation)
-4. [Running Locally](#running-locally)
-5. [Usage](#usage)
-6. [Configuration](#configuration)
-7. [Database Setup](#database-setup)
-8. [Database Schema](#database-schema)
-9. [GraphQL API Playground](#graphql-api-playground)
-10. [Testing](#testing)
-11. [Troubleshooting](#troubleshooting)
-12. [Core Concepts](#core-concepts)
-13. [Contributing](#contributing)
-14. [Improvements](#improvements)
-15. [Contact Information](#contact-information)
+2. [Architecture Diagram](#architecture-diagram)
+3. [Prerequisites](#prerequisites)
+4. [Installation](#installation)
+5. [Running Locally](#running-locally)
+6. [Usage](#usage)
+7. [Configuration](#configuration)
+8. [Database Setup](#database-setup)
+9. [Database Schema](#database-schema)
+10. [GraphQL API Playground](#graphql-api-playground)
+11. [Testing](#testing)
+12. [Troubleshooting](#troubleshooting)
+13. [Core Concepts](#core-concepts)
+14. [Design Principles](#design-principles)
+15. [Contributing](#contributing)
+16. [Improvements](#improvements)
+17. [Contact Information](#contact-information)
 
 ## Introduction
 
 This project is a Golang-based backend application that serves as the API for a [Next.js frontend application](https://github.com/jw-cv/iohk-nextjs-frontend). It utilizes GraphQL for API queries and mutations and connects to a PostgreSQL database running inside a Docker container. The application is designed to be run locally in a Docker container to ensure there are no dependency issues.
+
+## Architecture Diagram
+
+![Architecture Diagram](diagrams/iohk-backend-architectural-diagram.png)
 
 ## Prerequisites
 
@@ -94,14 +100,14 @@ Here are some useful commands:
   make docker-up
   ```
 
-- Stop the Docker containers:
-  ```
-  make docker-down
-  ```
-
 - View Docker logs:
   ```
   make docker-logs
+  ```
+
+- Stop the Docker containers:
+  ```
+  make docker-down
   ```
 
 - Run tests:
@@ -109,12 +115,17 @@ Here are some useful commands:
   make test
   ```
 
-- Generate GraphQL code:
+- Run test coverage:
   ```
-  make generate
+  make coverage
   ```
 
-This command should be run after making changes to the GraphQL schema in `graph/schema.graphqls`.
+- Run the integration tests
+
+  ```
+  make test-integration
+  ```
+
 
 ## Configuration
 
@@ -150,24 +161,51 @@ This will destroy the existing database and volumes and create a new one with th
 
 ## Database Schema
 
-The application uses a PostgreSQL database with a `customer` table. Below are the details of the table structure and constraints:
+The application uses a PostgreSQL database with a `customers` table. Below are the details of the table structure and constraints:
 
-### Customer Table Columns
+### Table Creation
 
-![Customer Table Columns](schema-diagrams/sql-customer-columns.png)
+```sql
+-- Create the customer table
+CREATE TABLE IF NOT EXISTS customers (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    surname VARCHAR(100) NOT NULL,
+    number INT NOT NULL,
+    gender VARCHAR(15) NOT NULL CHECK (gender IN ('Male', 'Female')),
+    country VARCHAR(50) NOT NULL,
+    dependants INT NOT NULL DEFAULT 0 CHECK (dependants >= 0),
+    birth_date DATE NOT NULL CHECK (birth_date <= CURRENT_DATE)
+);
+```
+
+### Sample Data Insertion
+
+```sql
+-- Insert sample data into the customers table using TO_DATE to handle the MM/DD/YYYY date format
+INSERT INTO customers (name, surname, number, gender, country, dependants, birth_date) VALUES
+('Jack', 'Front', 123, 'Male', 'Latvia', 5, TO_DATE('10/3/1981', 'MM/DD/YYYY')),
+('Jill', 'Human', 654, 'Female', 'Spain', 0, TO_DATE('6/2/1983', 'MM/DD/YYYY')),
+('Robert', 'Pullman', 456, 'Male', 'Germany', 2, TO_DATE('5/4/1999', 'MM/DD/YYYY')),
+('Chun Li', 'Suzuki', 987, 'Female', 'China', 1, TO_DATE('11/9/2001', 'MM/DD/YYYY')),
+('Sarah', 'Van Que', 587, 'Female', 'Latvia', 4, TO_DATE('6/22/1989', 'MM/DD/YYYY'));
+```
+
+### Initial Schema and Seed Data
+
+The following SQL script [init.sql](scripts/init.sql) is used to generate the initial schema and seed data when the PostgreSQL Docker container starts.
+
+![Customer Table Columns](diagrams/sql-customer-columns.png)
 
 ### Customer Table Checks
 
-![Customer Table Checks](schema-diagrams/sql-customer-checks.png)
+![Customer Table Checks](diagrams/sql-customer-checks.png)
 
 These checks ensure data integrity by enforcing rules such as:
 - The birth date cannot be in the future
 - The number of dependants cannot be negative
 - The gender must be one of the predefined values: 'Male', 'Female'
 
-### Initial Schema and Seed Data
-
-The following SQL script [init.sql](scripts/init.sql) is used to generate the initial schema and seed data when the PostgreSQL container starts.
 
 ## GraphQL API Playground
 
@@ -303,31 +341,30 @@ Note: Ensure Docker is running on your machine before running integration tests.
 
 ## Core Concepts
 
-![DDD Architecture Diagram](schema-diagrams/ddd-architecture.png)
+### Domain-Driven Design (DDD) Architecture
 
-### Repository
+This application follows DDD principles to separate business logic from infrastructure concerns.
 
-The Repository layer is holding logic for interactions with any kind of data store. This could be a database or streaming-service. A repository is always defined through an interface before implementing it. This is important to keep it testable. They live inside the repository-directory.
+![DDD Architecture Diagram](diagrams/ddd-architecture.png)
 
-- Logging: Should not provide logic-based, but technical logging (e.g. connection-failures, timeouts). A not found database-row is mostly not a technical error, even if your db-driver returns an error in this case.
+### Repository Layer
 
-- Errors: Errors returned by this Layer are not concerned for being seen by the end-user.
+The Repository layer interacts with the data store (e.g., database). Repositories are defined through interfaces to keep them testable. This layer handles technical errors such as database timeouts.
 
-### Service
+### Service Layer
 
-Your business-logic lives in the Service layer. Every action a user can do should be implemented in a service layer, but is not to this. A service could also provide functions used by other services, e.g. retrieving configuration. Similar to repositories, services should always be described through an interface. So you could mock it during tests. They live inside the service-directory.
+The Service layer contains business logic. It processes user actions and can call other services. Errors here are logical and are meant for the end-user.
 
-- Logging: Responsible for logic-based logging. Should log faulty actions (retrieving non existing entities, try accessing data without permission)
+### Resolver Layer
 
-- Errors: Errors should be non-technical and suited for the end-user.
+Resolvers are responsible for handling GraphQL requests. They connect the GraphQL queries and mutations with the service layer. They are described in the [schema.graphqls](/graph/schema.graphqls) file. Resolvers handle data transmission errors, passing meaningful errors from the service layer to the API consumer. An interface for each type of action (Query, Mutation, Subscription) is using [gqlgen](https://gqlgen.com/). In this example, the implementation is done in the [resolver.go](/graph/resolver.go) file. For larger projects it might be a good idea to use multiple files instead.
 
-### Resolver
+## Design Principles
 
-Resolvers are GraphQL construct for handling requests. They are described in the [schema.graphqls](/graph/schema.graphqls) file. An interface for each type of action (Query, Mutation, Subscription) is created through gqlgen. This interface holds all possible user-actions and needs to be implemented. In this example, the implementation is done in the [resolver.go](/graph/resolver.go) file. For larger projects it might be a good idea to use multiple files instead.
+This project is built using Domain-Driven Design (DDD) principles and adheres to Test-Driven Development (TDD). Key design considerations:
 
-- Logging: Logs everything interesting happening in data-transmission. In this example gqlgen should perform this aspect of logging.
-
-- Errors: Errors from the Service should be passed through from the Service layer.
+-  Domain Driven Design (DDD): The application's domain layer is the core, with repository and service layers designed to keep business logic separate from infrastructure.
+-  Test Driven Development (TDD): Unit tests were written to ensure that the business logic works as expected and as features are added, it ensures that the codebase remains robust and reliable. Integration tests simulate real-world usage, spinning up containers to test the PostgreSQL interactions.
 
 ## Contributing
 
@@ -349,12 +386,12 @@ Please see my [Contact Information](#contact-information) below for any queries 
 
 ## Improvements
 
-- There are many things I would have liked to add to this project and there is always room for improvement.
-- I would have liked to make use of https://hasura.io/ or similar tools to generate the APIs and other boilerplate code from the database schema / single source of truth.
-- Deploy this application to AWS and present a URL for ease of use.
-- Incorporate a CI/CD pipeline.
-- Add authentication, authorization and many more features to the frontend.
-- The list goes on...
+- While the project is functional, there are several enhancements I would have liked to implement.
+- Utilizing tools like [Hasura](https://hasura.io/) to automatically generate APIs and boilerplate code directly from the database schema would streamline development and maintain a single source of truth to enhance maintainability.
+- Deploying the application to AWS, providing a live URL for easier access and testing.
+- Setting up a CI/CD pipeline to automate testing, building, and deployment processes for continuous integration and delivery.
+- Adding authentication, authorization, and additional features to the frontend to enhance security and user experience.
+- There's always more that can be done to improve scalability, performance, and functionality!
 
 ## Contact Information
 
