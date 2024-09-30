@@ -1,3 +1,6 @@
+//go:build testcoverage
+// +build testcoverage
+
 package mapper
 
 import (

@@ -74,14 +74,14 @@ run: build
 test:
 	@echo "Ensuring dependencies are downloaded..."
 	@go mod download
-	@echo "Running tests..."
-	@go test -v ./...
+	@echo "Running tests with 'testcoverage' build tag..."
+	@go test -v -tags=testcoverage ./...
 
 coverage:
 	@echo "Ensuring dependencies are downloaded..."
 	@go mod download
-	@echo "Running tests with coverage..."
-	@go test -v -coverprofile=coverage.out ./...
+	@echo "Running tests with coverage using the 'testcoverage' build tag..."
+	@go test -v -coverprofile=coverage.out -tags=testcoverage ./...
 	@go tool cover -html=coverage.out -o coverage.html
 
 # Integration tests command
