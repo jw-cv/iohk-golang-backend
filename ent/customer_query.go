@@ -5,8 +5,8 @@ package ent
 import (
 	"context"
 	"fmt"
-	"iohk-golang-backend-preprod/ent/customer"
-	"iohk-golang-backend-preprod/ent/predicate"
+	"iohk-golang-backend/ent/customer"
+	"iohk-golang-backend/ent/predicate"
 	"math"
 
 	"entgo.io/ent"

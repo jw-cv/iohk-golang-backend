@@ -8,7 +8,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"iohk-golang-backend-preprod/graph/model"
+	"iohk-golang-backend/graph/model"
 	"strconv"
 	"sync"
 	"sync/atomic"

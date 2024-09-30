@@ -1,5 +1,5 @@
 # Variables
-BINARY_NAME=iohk-golang-backend-preprod
+BINARY_NAME=iohk-golang-backend
 DOCKER_COMPOSE_FILE=docker-compose.yml
 GO_FILES=$(shell find . -name '*.go' -not -path "./vendor/*")
 ENV_FILE=.env.local

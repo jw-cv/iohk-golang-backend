@@ -2,9 +2,9 @@ package graph
 
 import (
 	"context"
-	"iohk-golang-backend-preprod/graph/model"
-	"iohk-golang-backend-preprod/internal/domain/service"
-	"iohk-golang-backend-preprod/internal/infra/mapper"
+	"iohk-golang-backend/graph/model"
+	"iohk-golang-backend/internal/domain/service"
+	"iohk-golang-backend/internal/infra/mapper"
 )
 
 type Resolver struct {

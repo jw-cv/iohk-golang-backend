@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"iohk-golang-backend-preprod/internal/config"
-	"iohk-golang-backend-preprod/internal/domain/model"
-	"iohk-golang-backend-preprod/internal/infra/db"
+	"iohk-golang-backend/internal/config"
+	"iohk-golang-backend/internal/domain/model"
+	"iohk-golang-backend/internal/infra/db"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"

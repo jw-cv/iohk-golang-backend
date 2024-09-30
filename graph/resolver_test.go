@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"iohk-golang-backend-preprod/graph/model"
-	internalModel "iohk-golang-backend-preprod/internal/domain/model"
+	"iohk-golang-backend/graph/model"
+	internalModel "iohk-golang-backend/internal/domain/model"
 )
 
 type MockCustomerService struct {

@@ -9,9 +9,9 @@ import (
 	"log"
 	"reflect"
 
-	"iohk-golang-backend-preprod/ent/migrate"
+	"iohk-golang-backend/ent/migrate"
 
-	"iohk-golang-backend-preprod/ent/customer"
+	"iohk-golang-backend/ent/customer"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"

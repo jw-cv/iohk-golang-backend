@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"iohk-golang-backend-preprod/ent/customer"
+	"iohk-golang-backend/ent/customer"
 	"strings"
 	"time"
 

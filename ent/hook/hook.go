@@ -5,7 +5,7 @@ package hook
 import (
 	"context"
 	"fmt"
-	"iohk-golang-backend-preprod/ent"
+	"iohk-golang-backend/ent"
 )
 
 // The CustomerFunc type is an adapter to allow the use of ordinary

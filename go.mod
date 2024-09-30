@@ -1,4 +1,4 @@
-module iohk-golang-backend-preprod
+module iohk-golang-backend
 
 go 1.23.1
 

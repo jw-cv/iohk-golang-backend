@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iohk-golang-backend-preprod/ent/customer"
+	"iohk-golang-backend/ent/customer"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"

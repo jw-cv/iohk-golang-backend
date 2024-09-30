@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"time"
 
-	"iohk-golang-backend-preprod/ent"
-	"iohk-golang-backend-preprod/ent/customer"
-	"iohk-golang-backend-preprod/graph/model"
-	domainmodel "iohk-golang-backend-preprod/internal/domain/model"
+	"iohk-golang-backend/ent"
+	"iohk-golang-backend/ent/customer"
+	"iohk-golang-backend/graph/model"
+	domainmodel "iohk-golang-backend/internal/domain/model"
 )
 
 func DomainToGraphQL(c *domainmodel.Customer) *model.Customer {

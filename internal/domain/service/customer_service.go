@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
-	domainmodel "iohk-golang-backend-preprod/internal/domain/model"
-	"iohk-golang-backend-preprod/internal/domain/repository"
-	"iohk-golang-backend-preprod/internal/infra/mapper"
+	domainmodel "iohk-golang-backend/internal/domain/model"
+	"iohk-golang-backend/internal/domain/repository"
+	"iohk-golang-backend/internal/infra/mapper"
 )
 
 type CustomerService interface {

@@ -5,12 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"iohk-golang-backend-preprod/ent"
-	"iohk-golang-backend-preprod/graph"
-	"iohk-golang-backend-preprod/internal/config"
-	"iohk-golang-backend-preprod/internal/domain/repository"
-	"iohk-golang-backend-preprod/internal/domain/service"
-	"iohk-golang-backend-preprod/internal/infra/db"
+	"iohk-golang-backend/ent"
+	"iohk-golang-backend/graph"
+	"iohk-golang-backend/internal/config"
+	"iohk-golang-backend/internal/domain/repository"
+	"iohk-golang-backend/internal/domain/service"
+	"iohk-golang-backend/internal/infra/db"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"

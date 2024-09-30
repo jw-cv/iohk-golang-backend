@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"iohk-golang-backend-preprod/internal/config"
+	"iohk-golang-backend/internal/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

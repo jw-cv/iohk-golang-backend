@@ -11,11 +11,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"iohk-golang-backend-preprod/ent"
-	"iohk-golang-backend-preprod/ent/customer"
-	"iohk-golang-backend-preprod/ent/enttest"
-	graphModel "iohk-golang-backend-preprod/graph/model" // Add this import
-	"iohk-golang-backend-preprod/internal/domain/model"
+	"iohk-golang-backend/ent"
+	"iohk-golang-backend/ent/customer"
+	"iohk-golang-backend/ent/enttest"
+	graphModel "iohk-golang-backend/graph/model" // Add this import
+	"iohk-golang-backend/internal/domain/model"
 
 	_ "github.com/mattn/go-sqlite3"
 )

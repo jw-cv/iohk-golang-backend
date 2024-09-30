@@ -1,7 +1,7 @@
 package model
 
 import (
-	"iohk-golang-backend-preprod/ent/customer"
+	"iohk-golang-backend/ent/customer"
 	"time"
 )
 

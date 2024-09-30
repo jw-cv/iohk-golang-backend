@@ -5,11 +5,11 @@ package enttest
 import (
 	"context"
 
-	"iohk-golang-backend-preprod/ent"
+	"iohk-golang-backend/ent"
 	// required by schema hooks.
-	_ "iohk-golang-backend-preprod/ent/runtime"
+	_ "iohk-golang-backend/ent/runtime"
 
-	"iohk-golang-backend-preprod/ent/migrate"
+	"iohk-golang-backend/ent/migrate"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

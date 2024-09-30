@@ -3,7 +3,7 @@
 package customer
 
 import (
-	"iohk-golang-backend-preprod/ent/predicate"
+	"iohk-golang-backend/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"

@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"iohk-golang-backend-preprod/ent/customer"
-	"iohk-golang-backend-preprod/ent/schema"
+	"iohk-golang-backend/ent/customer"
+	"iohk-golang-backend/ent/schema"
 )
 
 // The init function reads all schema descriptors with runtime code
