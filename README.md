@@ -6,18 +6,19 @@
 3. [Prerequisites](#prerequisites)
 4. [Installation](#installation)
 5. [Running Locally](#running-locally)
-6. [Usage](#usage)
-7. [Configuration](#configuration)
-8. [Database Setup](#database-setup)
-9. [Database Schema](#database-schema)
-10. [GraphQL API Playground](#graphql-api-playground)
-11. [Testing](#testing)
-12. [Troubleshooting](#troubleshooting)
-13. [Core Concepts](#core-concepts)
-14. [Design Principles](#design-principles)
-15. [Contributing](#contributing)
-16. [Improvements](#improvements)
-17. [Contact Information](#contact-information)
+6. [Suggestion for Running the Application](#suggestion-for-running-the-application)
+7. [Usage](#usage)
+8. [Configuration](#configuration)
+9. [Database Setup](#database-setup)
+10. [Database Schema](#database-schema)
+11. [GraphQL Playground](#graphql-playground)
+12. [Testing](#testing)
+13. [Troubleshooting](#troubleshooting)
+14. [Core Concepts](#core-concepts)
+15. [Design Principles](#design-principles)
+16. [Contributing](#contributing)
+17. [Improvements](#improvements)
+18. [Contact Information](#contact-information)
 
 ## Introduction
 
@@ -32,6 +33,10 @@ This project is a Golang-based backend application that serves as the API for a 
 Before you begin, please ensure you have the following installed:
 - [Docker](https://docs.docker.com/get-docker/) (tested on 27.3.1, but should work on any version above 20.10)
 - [Docker Compose](https://docs.docker.com/compose/install/) (tested on 2.29.7, but should work on any version above 2.0)
+  - Old syntax (v1) of Docker use: `docker-compose`.
+  - New syntax (v2 and later) use: `docker compose`.
+  - Please make use of the `make` commands to build and run the project as this takes care of this for you (but it is something to be aware of if you run into any issues).
+  - Run `make help` to see the list of available commands.
 - [Make](https://www.gnu.org/software/make/) (tested on 4.3, but should work on any version above 3.81)
   - macOS: Included with Xcode Command Line Tools or alternatively via Homebrew with `brew install make`
   - Linux: Use your distribution's package manager (e.g., `sudo apt install make` for Ubuntu)
@@ -67,7 +72,7 @@ To run the application locally:
    This command will start both the PostgreSQL database and the Go application.
 
 
-2. The application should now be running. You can access the GraphQL playground at [http://localhost:8080/playground](http://localhost:8080/playground). You can view some example queries and mutations in the [GraphQL API Playground](#graphql-api-playground) section.
+2. The application should now be running. You can access the GraphQL playground at [http://localhost:8080/playground](http://localhost:8080/playground). You can view some example queries and mutations in the [GraphQL Playground](#graphql-playground) section.
 
 
 3. To view the logs of the running containers (this is automatically run when you run `make docker-up`):
@@ -84,6 +89,12 @@ To run the application locally:
    ```
 
 Note: The application uses the `.env.local` file for configuration by default. If you need to modify any settings, you can edit this file before running `make docker-up`.
+
+## Suggestion for Running the Application
+
+- Access the GraphQL Playground at [http://localhost:8080/](http://localhost:8080/) to create some data and interact with it via the frontend application at [http://localhost:3000](http://localhost:3000).
+
+- Copy some example queries and mutations in the [GraphQL Playground](#graphql-playground) section to paste into the GraphQL Playground to get you started.
 
 ## Usage
 
@@ -207,7 +218,7 @@ These checks ensure data integrity by enforcing rules such as:
 - The gender must be one of the predefined values: 'Male', 'Female'
 
 
-## GraphQL API Playground
+## GraphQL Playground
 
 The GraphQL API can be explored using GraphQL Playground, which is available when running the application locally. You can perform CRUD (Create, Read, Update, Delete) operations on the customer data. To access it:
 
